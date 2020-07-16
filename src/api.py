@@ -1,48 +1,43 @@
-from flask import Flask
-from flask_restful import Resource, Api
-from flask_restful import reqparse
-from flaskext.mysql import MySQL
-
-mysql = MySQL()
+from flask import Flask, jsonify, request,session
+from flask.json import JSONEncoder
 
 app = Flask(__name__)
-api = Api(app)
+app.secret_key = 'qwer1234'
 
-# MySQL configurations
-app.config['MYSQL_DATABASE_ID']='dbuser'
-app.config['MYSQL_DATABASE_PASSWORD']='dbuser_password'
-app.config['MYSQL_DATABASE_DB']='mysql_db_name'
-app.config['MYSQL_DATABASE_HOST']='mysql_host_name'
-mysql.init_app(app)
+@app.route('/user/signup',methods=['POST'])
+def signup():
+    try:
+        user = []
+        user.append({
+            'id' : 'wnajsldkf',
+            'password' : '1234'
+        })
+        return {'StatusCode' : 200, 'message' : 'User Account successfully created'}
+    except:
+        return {'StatusCode' : 400, 'message' : 'User Creation is failed'}    
 
-api = Api(app)
+# 접속시 session에 id 유무 확인
+@app.route('/')
+def index():
+    if 'id' in session:
+        return ('이미 로그인된 상태입니다.')
+    return ('로그인 되지 않았습니다.')  
 
-class CreateUser(Resource):
-    def post(self):
-        try:
-            parser = reqparse.RequestParser()
-            parser.add_argument('id',type=str)
-            parser.add_argument('password',type=str)
-            args = parser.parse_args()
+@app.route('/user/signin',methods=['POST'])
+def signin():
+    try:
+        session['id'] = 'wnajsldkf'
+        return {'StatusCode' : 200, 'message':'User login in completed'}
+    except:
+        return {'StatusCode' : 400, 'message':'User login is failed'}
 
-            _userId = args['id']
-            _userPassword = args['password']
-
-            conn = mysql.connect()
-            cursor = conn.cursor()
-            cursor.callproc('sp_create_user',(_userId,_userPassword))
-            data = cursor.fetchall()
-
-            if(len(data)>0):
-                if(str(data[0][2])==_userPassword):
-                    return{'status':200,'message':'User Creation success'}
-                else:
-                    return{'status':100,'message':'Authentication failure'}
-
-        except Exception as e:
-            return{'error':str(e)}
-
-api.add_resource(CreateUser,'/user/account/signup')
+@app.route('/user/signout')
+def signout():
+    try:    
+        session.pop('id',None)
+        return {'StatusCode' : 200, 'message' : 'User Logout is completed'}
+    except:
+        return {'StatusCode' : 400, 'message' : 'User Logout is failed'}
 
 if __name__ == '__main__':
     app.run(debug=True)
