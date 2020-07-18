@@ -6,16 +6,13 @@ app.secret_key = 'qwer1234'
 
 @app.route('/user/signup',methods=['POST'])
 def signup():
-    try:
-        user = []
-        user.append({
-            'id' : 'wnajsldkf',
-            'password' : '1234'
-        })
-        return {'StatusCode' : 200, 'message' : 'User Account successfully created'}
-    except:
-        return {'StatusCode' : 400, 'message' : 'User Creation is failed'}    
-
+    user = []
+    user.append({
+        'id' : 'wnajsldkf',
+        'password' : '1234'        
+    })
+    return{'StatusCode' : 200, 'message' : 'User Account successfully created'}
+    
 # 접속시 session에 id 유무 확인
 @app.route('/')
 def index():
