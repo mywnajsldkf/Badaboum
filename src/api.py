@@ -4,7 +4,7 @@ from flask.json import JSONEncoder
 app = Flask(__name__)
 app.secret_key = 'qwer1234'
 
-@app.route('/user/signup',methods=['POST'])
+@app.route('/user',methods=['POST'])
 def signup():
     user = []
     user.append({
